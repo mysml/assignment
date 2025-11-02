@@ -113,7 +113,7 @@
             <a href="{% url 'author_list' %}{% if search_query %}?search={{ search_query }}{% endif %}" 
                class="btn {% if not current_letter %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm alphabet-btn">
                 All
-                <span class="badge bg-light text-dark ms-1">{{ total_authors }}</span>
+                <span class="badge bg-light text-dark ms-1">{{ allauthors }}</span>
             </a>
             
             <!-- Alphabet Letters -->

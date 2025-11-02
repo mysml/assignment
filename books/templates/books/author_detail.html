@@ -86,16 +86,19 @@
                     <div class="row">
                         {% for book in books %}
                         <div class="col-md-6 mb-4">
-                            <div class="book-card h-100">
-                                <div class="row g-0">
+                            <div class="card book-card h-100">
+                                <div class="row g-0 h-100">
                                     <div class="col-4">
-                                        <img src="{{ book.photo_url }}" class="img-fluid rounded-start h-100" alt="{{ book.Title }}" style="object-fit: cover; min-height: 150px;">
+                                        <!-- 4:6 Aspect Ratio Image Container -->
+                                        <div class="book-image-container h-100">
+                                            <img src="{{ book.photo_url }}" class="book-image" alt="{{ book.Title }}">
+                                        </div>
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body d-flex flex-column h-100">
                                             <h6 class="card-title">{{ book.Title|truncatewords:6 }}</h6>
                                             <div class="mb-2">
-                                                <span class="badge bg-light text-dark border small">{{ book.GenreID.GenreName }}</span>
+                                                <span class="genre-badge">{{ book.GenreID.GenreName }}</span>
                                             </div>
                                             <div class="rating-stars small mb-2">
                                                 <i class="fas fa-star"></i>
@@ -125,42 +128,42 @@
                     {% endif %}
                 </div>
 
-            <!-- Pagination -->
-            {% if books.has_other_pages %}
-            <nav aria-label="Page navigation" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    {% if books.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ books.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for i in books.paginator.page_range %}
-                        {% if books.number == i %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ i }}</span>
-                        </li>
-                        {% elif i > books.number|add:'-3' and i < books.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if books.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ books.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-
-
+                <!-- Pagination -->
+                {% if books.has_other_pages %}
+                <div class="card-footer bg-white">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if books.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in books.paginator.page_range %}
+                                {% if books.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                                {% elif i > books.number|add:'-3' and i < books.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if books.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

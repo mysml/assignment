@@ -42,7 +42,7 @@
                                 <small class="text-muted">Avg Price</small>
                             </div>
                             <div class="col-6">
-                                <div class="fw-bold text-primary">{{ avg_rating|default:"4.6" }}*</div>
+                                <div class="fw-bold text-primary">{{ avg_rating|default:"4.6" }}★</div>
                                 <small class="text-muted">Avg Rating</small>
                             </div>
                         </div>
@@ -57,22 +57,38 @@
             <!-- Popular in Genre -->
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
-                    <h6 class="card-title">Popular in {{ genre.GenreName }}</h6>
+                    <h6 class="card-title">
+                        <i class="fas fa-fire me-2 text-warning"></i>Popular in {{ genre.GenreName }}
+                    </h6>
                     {% for book in books|slice:":3" %}
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{{ book.photo_url }}" alt="{{ book.Title }}" class="rounded me-3" style="width: 50px; height: 70px; object-fit: cover;">
-                        <div>
-                            <div class="fw-semibold small">{{ book.Title|truncatewords:3 }}</div>
-                            <div class="text-muted xsmall">by {{ book.AuthorID.first_name }}</div>
-                            <div class="rating-stars xsmall">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
+                    <a href="{% url 'book_detail' book.BookID %}" class="text-decoration-none text-dark">
+                        <div class="mini-book-card d-flex align-items-center mb-3 p-2 rounded hover-card">
+                            <div class="mini-book-image me-3">
+                                <div class="book-image-container" style="width: 50px; height: 75px;">
+                                    <img src="{{ book.photo_url }}" alt="{{ book.Title }}" class="book-image">
+                                </div>
+                            </div>
+                            <div class="mini-book-info flex-grow-1">
+                                <div class="fw-semibold small text-truncate">{{ book.Title }}</div>
+                                <div class="text-muted xsmall">by {{ book.AuthorID.first_name }}</div>
+                                <div class="rating-stars xsmall text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="price-tag xsmall fw-bold">${{ book.Price }}</span>
+                                    {% if book.is_available %}
+                                        <span class="badge bg-success badge-sm">In Stock</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary badge-sm">Out of Stock</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     {% endfor %}
                 </div>
             </div>
@@ -84,9 +100,12 @@
             <div class="row">
                 {% for book in books %}
                 <div class="col-xl-4 col-lg-6 mb-4">
-                    <div class="book-card h-100">
+                    <div class="card book-card h-100 shadow-sm">
                         <div class="position-relative">
-                            <img src="{{ book.photo_url }}" class="book-image w-100" alt="{{ book.Title }}">
+                            <!-- 4:6 Aspect Ratio Image Container -->
+                            <div class="book-image-container">
+                                <img src="{{ book.photo_url }}" class="book-image" alt="{{ book.Title }}">
+                            </div>
                             {% if forloop.counter <= 2 %}
                             <span class="discount-badge">Bestseller</span>
                             {% endif %}
@@ -102,6 +121,7 @@
                                 <i class="fas fa-star-half-alt"></i>
                                 <small class="text-muted ms-1">(128)</small>
                             </div>
+                            
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="price-tag">${{ book.Price }}</span>
@@ -136,8 +156,9 @@
             {% endif %}
         </div>
 
-            <!-- Pagination -->
-            {% if books.has_other_pages %}
+        <!-- Pagination -->
+        {% if books.has_other_pages %}
+        <div class="col-12">
             <nav aria-label="Page navigation" class="mt-5">
                 <ul class="pagination justify-content-center">
                     {% if books.has_previous %}
@@ -169,8 +190,8 @@
                     {% endif %}
                 </ul>
             </nav>
-            {% endif %}
-
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -185,6 +206,32 @@
 
 .xsmall {
     font-size: 0.75rem;
+}
+
+/* Mini Book Card Styles */
+.mini-book-card {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.mini-book-card:hover {
+    background-color: #f8f9fa;
+    border-color: var(--primary-color);
+    transform: translateX(5px);
+    cursor: pointer;
+}
+
+.hover-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.badge-sm {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+}
+
+.mini-book-info .text-truncate {
+    max-width: 150px;
 }
 </style>
 {% endblock %}

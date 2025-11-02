@@ -42,6 +42,26 @@ def book_list(request):
         if author:
             books = books.filter(AuthorID=author)
 
+    # Handle sorting
+    sort = request.GET.get('sort', 'featured')
+    sort_options = {
+        'featured': 'Featured',
+        'price_low_high': 'Price: Low to High', 
+        'price_high_low': 'Price: High to Low',
+        'newest': 'Newest First',
+        'title_asc': 'Title: A to Z'
+    }
+    if sort == 'price_low_high':
+        books = books.order_by('Price')
+    elif sort == 'price_high_low':
+        books = books.order_by('-Price')
+    elif sort == 'newest':
+        books = books.order_by('-PublicationDate')
+    elif sort == 'title_asc':
+        books = books.order_by('Title')
+    else:  # featured (default)
+        books = books.order_by('-BookID')  # or any other default ordering
+
     total_books = books.count()    
     paginator=Paginator(books,9)
     page=request.GET.get('page')
@@ -50,7 +70,9 @@ def book_list(request):
     return render(request, 'books/book_list.html', {
         'total_books': total_books,
         'books': pbooks,
-        'form': form
+        'form': form,
+        'current_sort': sort,
+        'current_sort_label': sort_options.get(sort, 'Featured')
     })
 
 def book_detail(request, book_id):
@@ -80,8 +102,11 @@ def book_detail(request, book_id):
 
 def author_list(request):
     # Get all authors
-    authors = Author.objects.all()
-    
+#    authors = Author.objects.all()
+    authors = Author.objects.annotate(book_count=Count('book')).filter(book_count__gt=0).order_by('LastName') 
+
+    all_authors = authors.count()
+
     # Get filter parameters
     letter_filter = request.GET.get('letter', '')
     search_query = request.GET.get('search', '')
@@ -116,7 +141,7 @@ def author_list(request):
 
 
     return render(request, 'books/author_list.html', {
-        'allauthors': authors,
+        'allauthors': all_authors,
         'authors': pauthors,
         'letter_data': letter_data,
         'current_letter': letter_filter,
@@ -139,7 +164,8 @@ def author_detail(request, author_id):
     })
 
 def genre_list(request):
-    genres = Genre.objects.all()
+#    genres = Genre.objects.all()
+    genres = Genre.objects.annotate(book_count=Count('book')).filter(book_count__gt=0).order_by('GenreName') 
     total_books = Book.objects.count()
     total_genres = Genre.objects.count()
 
@@ -150,7 +176,7 @@ def genre_list(request):
     return render(request, 'books/genre_list.html', {
         'genres': pgenres,
         'total_books': total_books,
-        'total_genres': total_genres
+        'total_genres': genres.count()
     })
 
 def genre_books(request, genre_id):
