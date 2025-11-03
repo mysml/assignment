@@ -102,8 +102,8 @@ def book_detail(request, book_id):
 
 def author_list(request):
     # Get all authors
-#    authors = Author.objects.all()
-    authors = Author.objects.annotate(book_count=Count('book')).filter(book_count__gt=0).order_by('LastName') 
+    authors = Author.objects.all()
+#    authors = Author.objects.annotate(book_count=Count('book')).filter(book_count__gt=0).order_by('LastName') 
 
     all_authors = authors.count()
 
